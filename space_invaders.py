@@ -60,12 +60,6 @@ def toggle_mute():
     else:
         pygame.mixer.music.set_volume(music_volume)  # Unmute music
 
-# def draw_mute_button():
-#     if is_muted:
-#         screen.blit(mute_icon, (mute_icon_width, mute_icon_height))  # Position for the mute icon
-#     else:
-#         screen.blit(unmute_icon, (mute_icon_width, mute_icon_height))  # Position for the unmute icon
-
 def first_time_setup():
     bullet_sound.set_volume(0.1)
 
@@ -102,20 +96,23 @@ def spawn_enemy(pos_x: float, pos_y: float, height: float, width: float):
     pygame.draw.rect(screen, "red", enemy)
     enemies.append(enemy)
     
+def reset_game():
+    print("Game Reset!")  # Placeholder for the reset functionality    
     
-    
+utils.buttons.append({"text": "Mute/Unmute", "color": "blue", "pos": (400, 0), "size": (150, 50), "action": toggle_mute})
+utils.buttons.append({"text": "Reset", "color": "green", "pos": (600, 0), "size": (150, 50), "action": reset_game})
+
 while running:
-    if (first_time_setup_complete == False):
+    if not first_time_setup_complete:
         first_time_setup()
         first_time_setup_complete = True
     
     # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = event.pos
+            utils.handle_button_clicks(event, screen)  # Check button clicks right after events
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
@@ -131,14 +128,15 @@ while running:
         spawn_bullet()
         cooldown_timer = fire_rate  # Reset the cooldown timer after spawning a bullet
     
-    if (cooldown_timer > 0):
+    if cooldown_timer > 0:
         cooldown_timer -= dt * 1000
         
     for enemy in enemies:
         pygame.draw.rect(screen, "red", enemy)
-        
-    if len(enemies) < 1:
-        spawn_enemy(random.randint(0, int(screen_x)), random.randint(0, int(screen_y - 300)), 50, 50)
+            
+    if len(enemies) < 5:
+        spawn_enemy(random.randint(0, int(screen_x - 50)), random.randint(100, int(screen_y - 300)), 50, 50)
+
         
     for bullet in bullets[:]:  # Use a copy of the bullets list
         for enemyLocation in enemies[:]:  # Use a copy of the enemies list
@@ -148,10 +146,12 @@ while running:
                 score += 1
                 break  # Exit the inner loop since the bullet is already removed
 
-    
     animate_bullets()
 
-    utils.draw_button(screen, "red", "Button", 100, 100, 50, 100, toggle_mute())
+    # Draw buttons here
+    for button in utils.buttons:
+        utils.draw_button(screen, button["color"], button["text"], button["pos"][0], button["pos"][1], button["size"][1], button["size"][0])
+
     show_score()
     show_player_position()
     show_cooldown_timer()
@@ -160,8 +160,6 @@ while running:
     pygame.display.flip()
 
     # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
     dt = clock.tick(60) / 1000
 
 pygame.quit()
