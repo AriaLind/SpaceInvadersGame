@@ -1,6 +1,8 @@
 # Example file showing a circle moving on screen
 import pygame
 import random
+# import game_music
+import utils
 
 # pygame setup
 pygame.init()
@@ -13,6 +15,10 @@ screen = pygame.display.set_mode((screen_x, screen_y))
 clock = pygame.time.Clock()
 running = True
 dt = 0
+
+pygame.mixer.music.load('boss_music.mp3')
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.1)
 
 first_time_setup_complete = False
 
@@ -37,6 +43,28 @@ cooldown_timer = 0
 bullets = []
 
 enemies = []
+
+mute_icon = pygame.image.load("mute.png")
+unmute_icon = pygame.image.load("unmute.png")
+
+is_muted = False
+music_volume = 0.1
+mute_icon_width = 10
+mute_icon_height = 10
+
+def toggle_mute():
+    global is_muted  # Declare is_muted as a global variable
+    is_muted = not is_muted
+    if is_muted:
+        pygame.mixer.music.set_volume(0)  # Mute music
+    else:
+        pygame.mixer.music.set_volume(music_volume)  # Unmute music
+
+# def draw_mute_button():
+#     if is_muted:
+#         screen.blit(mute_icon, (mute_icon_width, mute_icon_height))  # Position for the mute icon
+#     else:
+#         screen.blit(unmute_icon, (mute_icon_width, mute_icon_height))  # Position for the unmute icon
 
 def first_time_setup():
     bullet_sound.set_volume(0.1)
@@ -77,15 +105,17 @@ def spawn_enemy(pos_x: float, pos_y: float, height: float, width: float):
     
     
 while running:
+    if (first_time_setup_complete == False):
+        first_time_setup()
+        first_time_setup_complete = True
+    
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-    if (first_time_setup_complete == False):
-        first_time_setup()
-        first_time_setup_complete = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = event.pos
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
@@ -121,6 +151,7 @@ while running:
     
     animate_bullets()
 
+    utils.draw_button(screen, "red", "Button", 100, 100, 50, 100, toggle_mute())
     show_score()
     show_player_position()
     show_cooldown_timer()
