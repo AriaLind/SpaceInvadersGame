@@ -34,7 +34,7 @@ score = 0
 
 player_pos = pygame.Vector2(player_x, player_y)
 
-
+game_over = False
 
 mute_icon = pygame.image.load("./resources/img/mute.png")
 unmute_icon = pygame.image.load("./resources/img/unmute.png")
@@ -114,6 +114,13 @@ while running:
     ui_manager.show_player_position(screen, player_x, player_y)
     ui_manager.show_cooldown_timer(screen, player_manager.cooldown_timer)
 
+    if (player_manager.current_health <= 0):
+        game_over = True
+    
+    if (game_over):
+        ui_manager.show_game_over_screen(screen, score)
+        pygame.quit()
+    
     # flip() the display to put your work on screen
     pygame.display.flip()
 

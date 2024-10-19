@@ -3,7 +3,7 @@ import random
 
 print("enemy_manager module loaded")
 
-move_speed = 1
+move_speed = 5
 enemies = []
 
 def spawn_enemy(pos_x: float, pos_y: float, height: float, width: float):

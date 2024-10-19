@@ -45,3 +45,51 @@ def show_health(screen, current_health: int, max_health: int):
 
     # Optional: Draw a border around the health bar for better visual separation
     pygame.draw.rect(screen, (255, 255, 255), (x, y, width, height), 2)  # White border with thickness 2
+
+def show_game_over_screen(screen, score, delay=5):
+    # Set up fonts
+    font = pygame.font.Font(None, 74)  # Use a large font for the game over message
+    score_font = pygame.font.Font(None, 36)  # Smaller font for the score
+    countdown_font = pygame.font.Font(None, 48)  # Font for countdown timer
+
+    # Create surfaces for the game over text
+    game_over_text = font.render("Game Over", True, "red")
+    score_text = score_font.render(f"Your Score: {score}", True, "white")
+
+    # Get the rect for positioning the text
+    game_over_rect = game_over_text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 20))
+    score_rect = score_text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 20))
+
+    # Fill the screen with black
+    screen.fill("black")
+
+    # Blit the game over text and score to the screen
+    screen.blit(game_over_text, game_over_rect)
+    screen.blit(score_text, score_rect)
+
+    # Update the display
+    pygame.display.flip()
+
+    # Countdown loop
+    for remaining_time in range(delay, 0, -1):
+        # Fill the screen with black
+        screen.fill("black")
+
+        # Blit the game over text and score to the screen
+        screen.blit(game_over_text, game_over_rect)
+        screen.blit(score_text, score_rect)
+
+        # Create the countdown text
+        countdown_text = countdown_font.render(f"Exiting in {remaining_time}...", True, "white")
+        countdown_rect = countdown_text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 80))
+        
+        # Blit the countdown text to the screen
+        screen.blit(countdown_text, countdown_rect)
+
+        # Update the display
+        pygame.display.flip()
+
+        # Wait for one second
+        pygame.time.delay(1000)
+
+    # Optionally, quit the game or implement your restart logic here
