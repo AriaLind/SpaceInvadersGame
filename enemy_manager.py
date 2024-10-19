@@ -3,7 +3,12 @@ import random
 
 print("enemy_manager module loaded")
 
-move_speed = 5
+move_speed = 1
+wave_number = 0
+spawn_amount = 0
+base_increment = 1
+reduction_factor = 2
+enemy_size = 50
 enemies = []
 
 def spawn_enemy(pos_x: float, pos_y: float, height: float, width: float):
@@ -20,12 +25,12 @@ def spawn_enemy(pos_x: float, pos_y: float, height: float, width: float):
     enemies.append(new_enemy)
     return True
 
-def spawn_wave(amount: int, screen_width: int, enemy_size: int):
+def spawn_wave(screen_width: int):
     spawned = 0
     attempts = 0
     max_attempts = 100  # Limit attempts to avoid an infinite loop
     
-    while spawned < amount and attempts < max_attempts:
+    while spawned < spawn_amount and attempts < max_attempts:
         attempts += 1
         pos_x = random.randint(0, screen_width - enemy_size)  # Random X position within screen width
         pos_y = random.randint(-200, -50)  # Spawn enemies off-screen initially
@@ -37,6 +42,23 @@ def move_enemies():
     # Move each enemy downwards by a certain speed
     for enemy in enemies:
         enemy.y += move_speed
+
+def increase_difficulty():
+    global wave_number
+    global move_speed
+    global spawn_amount
+    global enemy_size
+    wave_number += 1
+    if (wave_number % 2 == 0):
+        increment = base_increment / (wave_number ** reduction_factor)
+        move_speed += increment
+        move_speed = round(move_speed, 2)
+        return
+    elif (wave_number % 5 == 0):
+        enemy_size -= 1
+        return
+    else:
+        spawn_amount += 1
 
 def draw_enemies(screen):
     # Draw each enemy on the screen

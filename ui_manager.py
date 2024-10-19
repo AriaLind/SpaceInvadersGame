@@ -3,28 +3,76 @@ import pygame
 print("ui_manager module loaded")
 
 # Define position as a tuple (x, y)
-health_bar_position = (20, 60)  # x=20, y=60 for example
+health_bar_position = (20, 100)  # x=20, y=60 for example
 # Define size as a tuple (width, height)
-health_bar_size = (200, 20)  # 200px wide, 20px tall
+health_bar_size = (200, 40)  # 200px wide, 20px tall
 
 def show_player_position(screen, player_x: float, player_y: float):
     font = pygame.font.Font(None, 36)
     text = font.render(f"Player X: {int(player_x)} Player Y: {int(player_y)}", True, "white")
-    screen.blit(text, (0, 20))
+    screen.blit(text, (0, 40))
 
 def show_cooldown_timer(screen, cooldown_timer: float):
     font = pygame.font.Font(None, 36)
     text = font.render(f"Weapon cooldown: {cooldown_timer}", True, "white")
-    screen.blit(text, (0, 40))
+    screen.blit(text, (0, 60))
 
 def show_score(screen, score: int):
     font = pygame.font.Font(None, 36)
     text = font.render(f"Score: {score}", True, "white")
+    screen.blit(text, (0, 20))
+    
+def show_wave_info(screen, wave: int, wave_speed: float, enemy_count: int, enemy_size: int):
+    font = pygame.font.Font(None, 36)
+    text = font.render(f"Wave: {wave} Enemy Speed: {wave_speed} Enemy Count: {enemy_count} Enemy Size: {enemy_size}", True, "white")
     screen.blit(text, (0, 0))
+    
+def wave_defeated_screen(screen, wave_number, countdown_time=3):
+    # Set up fonts
+    font = pygame.font.Font(None, 74)  # Large font for the message
+    countdown_font = pygame.font.Font(None, 48)  # Smaller font for countdown
+
+    # Create the wave defeated message
+    wave_defeated_text = font.render(f"Wave {wave_number} Defeated!", True, "green")
+    
+    # Get the rect for positioning the text
+    wave_defeated_rect = wave_defeated_text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 20))
+
+    # Fill the screen with black
+    screen.fill("black")
+
+    # Blit the wave defeated text to the screen
+    screen.blit(wave_defeated_text, wave_defeated_rect)
+
+    # Start the countdown timer
+    for remaining_time in range(countdown_time, 0, -1):
+        # Create the countdown text
+        countdown_text = countdown_font.render(f"Next wave in: {remaining_time}", True, "white")
+        countdown_rect = countdown_text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 40))
+        
+        # Update the display
+        screen.fill("black")  # Clear the screen
+        screen.blit(wave_defeated_text, wave_defeated_rect)  # Re-blit the wave defeated text
+        screen.blit(countdown_text, countdown_rect)  # Blit countdown text
+        pygame.display.flip()
+        
+        # Wait for a short time, ensuring the game remains responsive
+        for _ in range(10):  # Wait for approximately 1 second
+            pygame.time.delay(100)  # Delay for 100 milliseconds
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()  # Exit the game if the window is closed
+
+    # Clear the screen for the next wave to start
+    screen.fill("black")
+    pygame.display.flip()
+
+
 
 def show_health(screen, current_health: int, max_health: int):
     """
-    Draws a health bar on the screen.
+    Draws a health bar on the screen and displays the current health as a fraction.
     
     :param screen: The Pygame screen to draw on.
     :param current_health: The current health value.
@@ -45,6 +93,15 @@ def show_health(screen, current_health: int, max_health: int):
 
     # Optional: Draw a border around the health bar for better visual separation
     pygame.draw.rect(screen, (255, 255, 255), (x, y, width, height), 2)  # White border with thickness 2
+
+    # Prepare the health text
+    health_text = f"{current_health}/{max_health}"
+    font = pygame.font.Font(None, 36)  # Font size for the health text
+    text_surface = font.render(health_text, True, (255, 255, 255))  # White text
+    text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))  # Center the text
+
+    # Blit the health text on the screen
+    screen.blit(text_surface, text_rect)
 
 def show_game_over_screen(screen, score, delay=5):
     # Set up fonts

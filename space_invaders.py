@@ -47,13 +47,11 @@ score = 0
 def first_time_setup():
     player_manager.bullet_sound.set_volume(0.1)
 
- 
-    
 def reset_game():
     print("Game Reset!")  # Placeholder for the reset functionality    
     
-utils.buttons.append({"text": "Mute/Unmute", "color": "blue", "pos": (400, 0), "size": (150, 50), "action": music_manager.toggle_mute, "logo": "./resources/img/mute.png"})
-utils.buttons.append({"text": "Reset", "color": "green", "pos": (600, 0), "size": (150, 50), "action": reset_game})
+utils.buttons.append({"text": "Mute/Unmute", "color": "blue", "pos": (900, 0), "size": (150, 50), "action": music_manager.toggle_mute, "logo": "./resources/img/mute.png"})
+utils.buttons.append({"text": "Reset", "color": "green", "pos": (1100, 0), "size": (150, 50), "action": reset_game})
 
 while running:
     if not first_time_setup_complete:
@@ -91,8 +89,12 @@ while running:
     
     # Spawn a wave of enemies if there are none left
     if len(enemy_manager.enemies) < 1:
-        enemy_manager.spawn_wave(10, screen_x, 50)  # Spawn 10 enemies with size 50
-    
+        # Show the wave defeated screen and wait for the countdown to finish
+        if (enemy_manager.wave_number > 0):
+            ui_manager.wave_defeated_screen(screen, enemy_manager.wave_number) 
+        enemy_manager.increase_difficulty()
+        enemy_manager.spawn_wave(screen_x)
+
     # Move enemies down the screen
     enemy_manager.move_enemies()  # Adjust the speed as necessary
 
@@ -113,6 +115,7 @@ while running:
     ui_manager.show_score(screen, score)
     ui_manager.show_player_position(screen, player_x, player_y)
     ui_manager.show_cooldown_timer(screen, player_manager.cooldown_timer)
+    ui_manager.show_wave_info(screen, enemy_manager.wave_number, enemy_manager.move_speed, enemy_manager.spawn_amount, enemy_manager.enemy_size)
 
     if (player_manager.current_health <= 0):
         game_over = True
