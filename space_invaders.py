@@ -16,9 +16,11 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
+music_volume = 0.1
+
 pygame.mixer.music.load('boss_music.mp3')
 pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.set_volume(music_volume)
 
 first_time_setup_complete = False
 
@@ -48,7 +50,6 @@ mute_icon = pygame.image.load("mute.png")
 unmute_icon = pygame.image.load("unmute.png")
 
 is_muted = False
-music_volume = 0.1
 mute_icon_width = 10
 mute_icon_height = 10
 
